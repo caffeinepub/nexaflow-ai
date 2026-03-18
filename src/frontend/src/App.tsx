@@ -1,10 +1,24 @@
+import { Toaster } from "@/components/ui/sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Loader2, Mail, MessageSquare, User } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  Mail,
+  MessageSquare,
+  Search,
+  ShoppingBag,
+  User,
+  X,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { SiFacebook, SiInstagram, SiPinterest } from "react-icons/si";
 import AdminPanel from "./AdminPanel";
+import ProductDetailPage from "./ProductDetailPage";
+import SearchPage from "./SearchPage";
 import UserLoginPage from "./UserLoginPage";
+import { CartDrawer } from "./components/CartDrawer";
+import { CartProvider, useCart } from "./contexts/CartContext";
 import { useActor } from "./hooks/useActor";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -71,6 +85,16 @@ const fragranceNotes = [
 function Header() {
   const [active, setActive] = useState("COLLECTIONS");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { totalCount, openCart } = useCart();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+    }
+  };
 
   return (
     <header
@@ -113,7 +137,8 @@ function Header() {
           </button>
 
           {/* Center brand */}
-          <div
+          <a
+            href="/"
             className="flex flex-col items-center gap-0.5"
             data-ocid="nav.link"
           >
@@ -147,37 +172,107 @@ function Header() {
             >
               MAISON DE PARFUMERIE
             </p>
-          </div>
+          </a>
 
-          {/* Cart */}
-          <button
-            type="button"
-            className="flex items-center gap-1.5 font-body text-xs transition-colors"
-            style={{ color: "oklch(0.65 0.010 85)", letterSpacing: "0.15em" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color =
-                "oklch(0.72 0.095 75)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color =
-                "oklch(0.65 0.010 85)";
-            }}
-            data-ocid="nav.button"
-          >
-            <span className="hidden sm:inline">CART</span>
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              aria-hidden="true"
+          {/* Right: search + cart */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Desktop search */}
+            {searchOpen ? (
+              <form
+                onSubmit={handleSearch}
+                className="hidden md:flex items-center gap-2"
+              >
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search..."
+                  className="bg-transparent outline-none font-body text-xs w-36"
+                  style={{
+                    color: "oklch(0.88 0.010 85)",
+                    caretColor: "oklch(0.72 0.095 75)",
+                    borderBottom: "1px solid oklch(0.72 0.095 75 / 40%)",
+                    paddingBottom: "2px",
+                    letterSpacing: "0.05em",
+                  }}
+                  data-ocid="nav.search_input"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(false)}
+                  style={{ color: "oklch(0.45 0.008 85)" }}
+                  aria-label="Close search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </form>
+            ) : (
+              <button
+                type="button"
+                className="hidden md:flex items-center justify-center transition-colors"
+                style={{ color: "oklch(0.55 0.010 85)" }}
+                onClick={() => setSearchOpen(true)}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    "oklch(0.72 0.095 75)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    "oklch(0.55 0.010 85)";
+                }}
+                aria-label="Open search"
+                data-ocid="nav.button"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Mobile search icon */}
+            <a
+              href="/search"
+              className="flex md:hidden items-center justify-center transition-colors"
+              style={{ color: "oklch(0.55 0.010 85)" }}
+              aria-label="Search"
+              data-ocid="nav.link"
             >
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
-            </svg>
-          </button>
+              <Search className="w-4 h-4" />
+            </a>
+
+            {/* Cart */}
+            <button
+              type="button"
+              className="flex items-center gap-1.5 font-body text-xs transition-colors relative"
+              style={{ color: "oklch(0.65 0.010 85)", letterSpacing: "0.15em" }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color =
+                  "oklch(0.72 0.095 75)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color =
+                  "oklch(0.65 0.010 85)";
+              }}
+              onClick={openCart}
+              data-ocid="nav.button"
+            >
+              <span className="hidden sm:inline">CART</span>
+              <div className="relative">
+                <ShoppingBag className="w-4 h-4" />
+                {totalCount > 0 && (
+                  <span
+                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full font-body flex items-center justify-center"
+                    style={{
+                      background: "oklch(0.72 0.095 75)",
+                      color: "oklch(0.18 0.008 210)",
+                      fontSize: "0.55rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {totalCount > 9 ? "9+" : totalCount}
+                  </span>
+                )}
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Desktop Nav row */}
@@ -195,7 +290,12 @@ function Header() {
                     : "oklch(0.65 0.010 85)",
                 letterSpacing: "0.2em",
               }}
-              onClick={() => setActive(link)}
+              onClick={() => {
+                setActive(link);
+                document
+                  .getElementById(link.toLowerCase())
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
               data-ocid="nav.tab"
             >
               {link}
@@ -229,12 +329,40 @@ function Header() {
                 onClick={() => {
                   setActive(link);
                   setMenuOpen(false);
+                  document
+                    .getElementById(link.toLowerCase())
+                    ?.scrollIntoView({ behavior: "smooth" });
                 }}
                 data-ocid="nav.tab"
               >
                 {link}
               </button>
             ))}
+            {/* Mobile search */}
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center gap-2 py-2"
+            >
+              <Search
+                className="w-3.5 h-3.5"
+                style={{ color: "oklch(0.45 0.008 85)" }}
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search fragrances..."
+                className="bg-transparent outline-none font-body text-xs flex-1"
+                style={{
+                  color: "oklch(0.88 0.010 85)",
+                  caretColor: "oklch(0.72 0.095 75)",
+                  borderBottom: "1px solid oklch(0.72 0.095 75 / 30%)",
+                  paddingBottom: "2px",
+                  letterSpacing: "0.05em",
+                }}
+                data-ocid="nav.search_input"
+              />
+            </form>
           </nav>
         )}
       </div>
@@ -299,6 +427,11 @@ function HeroSection() {
           <button
             type="button"
             className="btn-gold-outline"
+            onClick={() =>
+              document
+                .getElementById("collections")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
             data-ocid="hero.primary_button"
           >
             EXPLORE THE SCENT
@@ -475,8 +608,8 @@ function ServicesSection() {
                   >
                     {s.description}
                   </p>
-                  <button
-                    type="button"
+                  <a
+                    href={`/product/${String(s.id)}`}
                     className="font-body text-xs transition-colors"
                     style={{
                       color: "oklch(0.72 0.095 75)",
@@ -486,7 +619,7 @@ function ServicesSection() {
                     data-ocid={`collections.button.${i + 1}`}
                   >
                     DISCOVER →
-                  </button>
+                  </a>
                 </div>
               </motion.div>
             ))}
@@ -608,6 +741,11 @@ function BrandStorySection() {
             <button
               type="button"
               className="btn-gold-outline"
+              onClick={() =>
+                document
+                  .getElementById("story")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
               data-ocid="story.primary_button"
             >
               DISCOVER OUR STORY
@@ -1366,6 +1504,11 @@ function FeatureStrip() {
               type="button"
               className="btn-gold-outline"
               style={{ fontSize: "0.65rem" }}
+              onClick={() =>
+                document
+                  .getElementById("collections")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
               data-ocid={`feature.button.${i + 1}`}
             >
               {tile.cta}
@@ -1565,5 +1708,29 @@ export default function App() {
   const path = window.location.pathname;
   if (path.startsWith("/admin")) return <AdminPanel />;
   if (path.startsWith("/login")) return <UserLoginPage />;
-  return <PerfumeSite />;
+  if (path.startsWith("/product/")) {
+    return (
+      <CartProvider>
+        <ProductDetailPage />
+        <CartDrawer />
+        <Toaster />
+      </CartProvider>
+    );
+  }
+  if (path.startsWith("/search")) {
+    return (
+      <CartProvider>
+        <SearchPage />
+        <CartDrawer />
+        <Toaster />
+      </CartProvider>
+    );
+  }
+  return (
+    <CartProvider>
+      <PerfumeSite />
+      <CartDrawer />
+      <Toaster />
+    </CartProvider>
+  );
 }

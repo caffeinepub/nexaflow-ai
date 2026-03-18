@@ -1,12 +1,54 @@
 import { ChevronLeft, Loader2, LogOut, User } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 
 export default function UserLoginPage() {
-  const { login, clear, loginStatus, identity, isLoggingIn } =
-    useInternetIdentity();
+  const {
+    login,
+    clear,
+    loginStatus,
+    identity,
+    isLoggingIn,
+    isInitializing,
+    isLoginError,
+  } = useInternetIdentity();
   const isLoggedIn = loginStatus === "success" && !!identity;
   const principal = identity?.getPrincipal().toString() ?? "";
+
+  // Force-enable the button if login attempt is stuck for > 30 seconds
+  const [forceEnabled, setForceEnabled] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (isLoggingIn) {
+      setForceEnabled(false);
+      setTimedOut(false);
+      timeoutRef.current = setTimeout(() => {
+        setForceEnabled(true);
+        setTimedOut(true);
+      }, 30000);
+    } else {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setForceEnabled(false);
+      setTimedOut(false);
+    }
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [isLoggingIn]);
+
+  const isButtonDisabled = (isLoggingIn || isInitializing) && !forceEnabled;
+
+  const handleLogin = () => {
+    setForceEnabled(false);
+    setTimedOut(false);
+    login();
+  };
 
   return (
     <div
@@ -149,20 +191,25 @@ export default function UserLoginPage() {
 
                 <button
                   type="button"
-                  onClick={login}
-                  disabled={isLoggingIn}
+                  onClick={handleLogin}
+                  disabled={isButtonDisabled}
                   className="w-full py-3.5 px-6 rounded-lg flex items-center justify-center gap-3 text-sm font-medium transition-all"
                   style={{
-                    background: "oklch(0.72 0.095 75)",
+                    background: isButtonDisabled
+                      ? "oklch(0.60 0.070 75)"
+                      : "oklch(0.72 0.095 75)",
                     color: "oklch(0.18 0.008 210)",
                     letterSpacing: "0.1em",
                     border: "none",
-                    cursor: isLoggingIn ? "not-allowed" : "pointer",
-                    opacity: isLoggingIn ? 0.7 : 1,
+                    cursor: isButtonDisabled ? "not-allowed" : "pointer",
+                    opacity: isButtonDisabled ? 0.7 : 1,
+                    pointerEvents: isButtonDisabled ? "none" : "auto",
                   }}
                   data-ocid="login.primary_button"
                 >
-                  {isLoggingIn ? (
+                  {isInitializing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : isLoggingIn && !forceEnabled ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <svg
@@ -177,10 +224,32 @@ export default function UserLoginPage() {
                       <circle cx="12" cy="7" r="4" />
                     </svg>
                   )}
-                  {isLoggingIn
-                    ? "Signing in..."
-                    : "SIGN IN WITH INTERNET IDENTITY"}
+                  {isInitializing
+                    ? "Initializing..."
+                    : isLoggingIn && !forceEnabled
+                      ? "Signing in..."
+                      : "SIGN IN WITH INTERNET IDENTITY"}
                 </button>
+
+                {/* Error states */}
+                {isLoginError && (
+                  <p
+                    className="mt-3 text-xs"
+                    style={{ color: "oklch(0.65 0.18 25)" }}
+                    data-ocid="login.error_state"
+                  >
+                    Login failed. Please try again.
+                  </p>
+                )}
+                {timedOut && (
+                  <p
+                    className="mt-3 text-xs"
+                    style={{ color: "oklch(0.72 0.095 75)" }}
+                    data-ocid="login.error_state"
+                  >
+                    Login is taking longer than expected. You may try again.
+                  </p>
+                )}
 
                 <p
                   className="mt-6 text-xs"

@@ -99,6 +99,7 @@ export interface Admin {
     email: string;
 }
 export interface backendInterface {
+    _initializeAccessControlWithSecret(secret: string): Promise<void>;
     addAdmin(email: string): Promise<void>;
     getAllAdmins(): Promise<Array<Admin>>;
     getAllSubmissions(): Promise<Array<Submission>>;
@@ -108,6 +109,9 @@ export interface backendInterface {
     updateAdminEmail(newEmail: string): Promise<void>;
 }
 export class Backend implements backendInterface {
+    async _initializeAccessControlWithSecret(_secret: string): Promise<void> {
+        // no-op: method not present in this backend version
+    }
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async addAdmin(arg0: string): Promise<void> {
         if (this.processError) {

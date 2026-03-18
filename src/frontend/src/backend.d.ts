@@ -33,6 +33,7 @@ export interface Testimonial {
     colorKey: string;
 }
 export interface backendInterface {
+    _initializeAccessControlWithSecret(secret: string): Promise<void>;
     addAdmin(email: string): Promise<void>;
     getAllAdmins(): Promise<Array<Admin>>;
     getAllSubmissions(): Promise<Array<Submission>>;
