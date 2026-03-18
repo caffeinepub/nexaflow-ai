@@ -1,0 +1,307 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.25rem;
+
+    /* Dark charcoal backgrounds */
+    --background: 0.22 0.008 210;
+    --foreground: 0.95 0.01 85;
+    --card: 0.25 0.01 210;
+    --card-foreground: 0.95 0.01 85;
+    --popover: 0.25 0.01 210;
+    --popover-foreground: 0.95 0.01 85;
+
+    /* Gold primary */
+    --primary: 0.72 0.095 75;
+    --primary-foreground: 0.18 0.008 210;
+
+    /* Espresso brown secondary */
+    --secondary: 0.27 0.055 45;
+    --secondary-foreground: 0.95 0.01 85;
+
+    /* Muted gray */
+    --muted: 0.3 0.008 210;
+    --muted-foreground: 0.65 0.01 85;
+
+    /* Gold accent */
+    --accent: 0.66 0.1 72;
+    --accent-foreground: 0.18 0.008 210;
+
+    --destructive: 0.577 0.245 27;
+    --destructive-foreground: 0.98 0 0;
+
+    --border: 0.95 0.01 85 / 12%;
+    --input: 0.95 0.01 85 / 10%;
+    --ring: 0.72 0.095 75;
+
+    --chart-1: 0.72 0.095 75;
+    --chart-2: 0.27 0.055 45;
+    --chart-3: 0.91 0 0;
+    --chart-4: 0.55 0.04 45;
+    --chart-5: 0.65 0.01 85;
+
+    --sidebar: 0.2 0.008 210;
+    --sidebar-foreground: 0.95 0.01 85;
+    --sidebar-primary: 0.72 0.095 75;
+    --sidebar-primary-foreground: 0.18 0.008 210;
+    --sidebar-accent: 0.25 0.01 210;
+    --sidebar-accent-foreground: 0.95 0.01 85;
+    --sidebar-border: 0.95 0.01 85 / 10%;
+    --sidebar-ring: 0.72 0.095 75;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Cinzel", serif;
+  }
+}
+
+@layer utilities {
+  /* Gold text treatment */
+  .text-gold {
+    color: oklch(0.72 0.095 75);
+  }
+
+  .text-gold-light {
+    color: oklch(0.82 0.085 78);
+  }
+
+  /* Thin gold rule */
+  .gold-rule {
+    border-color: oklch(0.72 0.095 75 / 40%);
+  }
+
+  /* Luxury card – dark charcoal */
+  .lux-card {
+    background: oklch(0.25 0.01 210 / 90%);
+    border: 1px solid oklch(0.72 0.095 75 / 20%);
+  }
+
+  /* Product card – light grey panel */
+  .product-card {
+    background: oklch(0.93 0.004 85);
+    border: 1px solid oklch(0.72 0.095 75 / 15%);
+  }
+
+  /* Cream panel */
+  .cream-panel {
+    background: oklch(0.96 0.015 85);
+  }
+
+  /* Brown panel */
+  .brown-panel {
+    background: oklch(0.27 0.055 45);
+  }
+
+  /* Charcoal panel */
+  .charcoal-panel {
+    background: oklch(0.22 0.008 210);
+  }
+
+  /* Nav active underline */
+  .nav-active {
+    border-bottom: 1px solid oklch(0.72 0.095 75);
+    color: oklch(0.72 0.095 75);
+  }
+
+  /* CTA pill button */
+  .btn-gold-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 2rem;
+    border: 1px solid oklch(0.72 0.095 75);
+    color: oklch(0.72 0.095 75);
+    border-radius: 9999px;
+    font-family: "Cinzel", serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: transparent;
+    transition: background 0.25s, color 0.25s;
+    cursor: pointer;
+  }
+
+  .btn-gold-outline:hover {
+    background: oklch(0.72 0.095 75);
+    color: oklch(0.18 0.008 210);
+  }
+
+  .btn-gold-solid {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.75rem;
+    background: oklch(0.72 0.095 75);
+    color: oklch(0.18 0.008 210);
+    border-radius: 9999px;
+    font-family: "Cinzel", serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: background 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+  }
+
+  .btn-gold-solid:hover {
+    background: oklch(0.78 0.085 78);
+    box-shadow: 0 4px 20px oklch(0.72 0.095 75 / 40%);
+  }
+
+  /* thin horizontal divider in gold */
+  .divider-gold {
+    border: none;
+    border-top: 1px solid oklch(0.72 0.095 75 / 30%);
+  }
+
+  /* editorial section overline */
+  .overline-gold {
+    font-family: "Jost", sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: oklch(0.72 0.095 75);
+  }
+
+  /* newsletter input */
+  .newsletter-input {
+    background: oklch(0.28 0.01 210);
+    border: 1px solid oklch(0.72 0.095 75 / 30%);
+    color: oklch(0.92 0.01 85);
+    padding: 0.75rem 1.25rem;
+    outline: none;
+    font-family: "Jost", sans-serif;
+    font-size: 0.85rem;
+    transition: border-color 0.2s;
+  }
+
+  .newsletter-input::placeholder {
+    color: oklch(0.55 0.008 85);
+  }
+
+  .newsletter-input:focus {
+    border-color: oklch(0.72 0.095 75 / 70%);
+  }
+
+  /* admin utilities (keep from before) */
+  .admin-bg {
+    background: oklch(0.065 0.018 265);
+  }
+  .admin-sidebar {
+    background: oklch(0.085 0.022 265);
+    border-right: 1px solid oklch(0.94 0.018 265 / 10%);
+  }
+  .admin-topbar {
+    background: oklch(0.085 0.022 265 / 90%);
+    border-bottom: 1px solid oklch(0.94 0.018 265 / 8%);
+    backdrop-filter: blur(12px);
+  }
+  .admin-card {
+    background: oklch(0.105 0.026 265 / 80%);
+    border: 1px solid oklch(0.94 0.018 265 / 10%);
+  }
+  .admin-row {
+    background: oklch(0.12 0.025 265 / 60%);
+  }
+  .admin-nav-active {
+    background: oklch(0.56 0.22 264 / 15%);
+    color: oklch(0.75 0.15 264);
+    border: 1px solid oklch(0.56 0.22 264 / 25%);
+  }
+  .admin-btn-primary {
+    background: linear-gradient(
+      135deg,
+      oklch(0.56 0.22 264),
+      oklch(0.52 0.24 295)
+    );
+    color: white;
+    box-shadow: 0 0 20px oklch(0.56 0.22 264 / 25%);
+  }
+  .admin-btn-primary:hover {
+    box-shadow: 0 0 30px oklch(0.56 0.22 264 / 40%);
+  }
+  .admin-btn-outline {
+    background: transparent;
+    border: 1px solid oklch(0.94 0.018 265 / 20%);
+    color: oklch(0.75 0.025 265);
+  }
+  .admin-btn-outline:hover {
+    background: oklch(0.94 0.018 265 / 5%);
+  }
+  .admin-input {
+    background: oklch(0.1 0.025 265);
+    border-color: oklch(0.94 0.018 265 / 15%);
+    color: oklch(0.9 0.02 265);
+  }
+  .admin-input:focus {
+    border-color: oklch(0.56 0.22 264 / 50%);
+    box-shadow: 0 0 0 2px oklch(0.56 0.22 264 / 15%);
+  }
+  .admin-table-header {
+    background: oklch(0.095 0.024 265 / 50%);
+    border-bottom: 1px solid oklch(0.94 0.018 265 / 10%);
+  }
+  .admin-table-row {
+    border-bottom: 1px solid oklch(0.94 0.018 265 / 6%);
+    transition: background 0.15s;
+  }
+  .admin-table-row:hover {
+    background: oklch(0.12 0.025 265 / 40%);
+  }
+  .admin-dialog {
+    background: oklch(0.105 0.026 265);
+    border: 1px solid oklch(0.94 0.018 265 / 15%);
+    color: oklch(0.9 0.02 265);
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fadeInUp {
+    animation: fadeInUp 0.75s ease both;
+  }
+}
